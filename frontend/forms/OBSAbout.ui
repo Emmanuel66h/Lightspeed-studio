@@ -10,9 +10,11 @@
     <height>519</height>
    </rect>
   </property>
+
   <property name="windowTitle">
-   <string>About</string>
+   <string>About Lightspeed Studio</string>
   </property>
+
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="leftMargin">
     <number>0</number>
@@ -26,6 +28,7 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
+
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <property name="spacing">
@@ -43,6 +46,7 @@
      <property name="bottomMargin">
       <number>6</number>
      </property>
+
      <item>
       <widget class="QLabel" name="icon">
        <property name="minimumSize">
@@ -51,35 +55,42 @@
          <height>256</height>
         </size>
        </property>
+
        <property name="maximumSize">
         <size>
          <width>256</width>
          <height>256</height>
         </size>
        </property>
+
        <property name="text">
         <string/>
        </property>
+
        <property name="pixmap">
-        <pixmap>:res/images/obs.png</pixmap>
+        <pixmap>:res/images/lightspeed.png</pixmap>
        </property>
+
        <property name="scaledContents">
         <bool>true</bool>
        </property>
       </widget>
      </item>
+
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
         <number>0</number>
        </property>
+
        <item>
         <widget class="QLabel" name="name">
          <property name="text">
-          <string notr="true">OBS Studio</string>
+          <string notr="true">Lightspeed Studio</string>
          </property>
         </widget>
        </item>
+
        <item>
         <widget class="QLabel" name="version">
          <property name="text">
@@ -87,6 +98,7 @@
          </property>
         </widget>
        </item>
+
        <item>
         <spacer name="verticalSpacer_2">
          <property name="orientation">
@@ -103,16 +115,18 @@
          </property>
         </spacer>
        </item>
+
        <item>
         <widget class="QLabel" name="info">
          <property name="text">
-          <string>About.Info</string>
+          <string>Lightspeed Studio is a powerful open-source streaming and recording platform designed for creators, gamers and broadcasters.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
          </property>
         </widget>
        </item>
+
        <item>
         <spacer name="verticalSpacer_3">
          <property name="orientation">
@@ -129,23 +143,26 @@
          </property>
         </spacer>
        </item>
+
        <item>
         <widget class="QLabel" name="contribute">
          <property name="text">
-          <string notr="true">Contribute</string>
+          <string notr="true">Contribute to Lightspeed Studio</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
          </property>
         </widget>
        </item>
+
        <item>
         <widget class="QLabel" name="donate">
          <property name="text">
-          <string notr="true">Donate</string>
+          <string notr="true">Support Lightspeed Studio</string>
          </property>
         </widget>
        </item>
+
        <item>
         <widget class="QLabel" name="getInvolved">
          <property name="text">
@@ -153,6 +170,7 @@
          </property>
         </widget>
        </item>
+
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
@@ -169,6 +187,7 @@
          </property>
         </spacer>
        </item>
+
        <item>
         <widget class="QTextBrowser" name="textBrowser">
          <property name="openExternalLinks">
@@ -176,10 +195,13 @@
          </property>
         </widget>
        </item>
+
       </layout>
      </item>
+
     </layout>
    </item>
+
    <item>
     <widget class="QFrame" name="widget">
      <property name="minimumSize">
@@ -188,22 +210,28 @@
        <height>60</height>
       </size>
      </property>
+
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
        <number>0</number>
       </property>
+
       <property name="leftMargin">
        <number>0</number>
       </property>
+
       <property name="topMargin">
        <number>0</number>
       </property>
+
       <property name="rightMargin">
        <number>0</number>
       </property>
+
       <property name="bottomMargin">
        <number>0</number>
       </property>
+
       <item>
        <widget class="ClickableLabel" name="about">
         <property name="text">
@@ -214,16 +242,18 @@
         </property>
        </widget>
       </item>
+
       <item>
        <widget class="ClickableLabel" name="authors">
         <property name="text">
-         <string>Authors</string>
+         <string>Lightspeed Team</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
        </widget>
       </item>
+
       <item>
        <widget class="ClickableLabel" name="license">
         <property name="text">
@@ -234,11 +264,14 @@
         </property>
        </widget>
       </item>
+
      </layout>
     </widget>
    </item>
+
   </layout>
  </widget>
+
  <customwidgets>
   <customwidget>
    <class>ClickableLabel</class>
@@ -246,6 +279,7 @@
    <header>components/ClickableLabel.hpp</header>
   </customwidget>
  </customwidgets>
+
  <resources/>
  <connections/>
 </ui>

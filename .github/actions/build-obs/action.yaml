@@ -40,6 +40,11 @@ runs:
   using: composite
 
   steps:
+
+    # ============================================================
+    # macOS
+    # ============================================================
+
     - name: Run macOS Build
       if: runner.os == 'macOS'
       shell: zsh --no-rcs --errexit --pipefail {0}
@@ -57,24 +62,45 @@ runs:
           --target macos-${{ inputs.target }}
         )
 
-        if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
+        if (( ${+RUNNER_DEBUG} )); then
+          build_args+=(--debug)
+        fi
 
-        if [[ '${{ inputs.codesign }}' == true ]] build_args+=(--codesign)
+        if [[ '${{ inputs.codesign }}' == true ]]; then
+          build_args+=(--codesign)
+        fi
 
         git fetch origin --no-tags --no-recurse-submodules -q
+
         .github/scripts/build-macos ${build_args}
+
+
+    # ============================================================
+    # Linux dependencies
+    # ============================================================
 
     - name: Install Dependencies 🛠️
       if: runner.os == 'Linux'
       shell: bash
       run: |
         : Install Dependencies 🛠️
+
         echo ::group::Install Dependencies
+
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> $GITHUB_PATH
+
+        echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> "$GITHUB_PATH"
+
         brew update
+
         brew install --quiet zsh
+
         echo ::endgroup::
+
+
+    # ============================================================
+    # Ubuntu
+    # ============================================================
 
     - name: Run Ubuntu Build
       if: runner.os == 'Linux'
@@ -90,10 +116,18 @@ runs:
           --target ubuntu-${{ inputs.target }}
         )
 
-        if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
+        if (( ${+RUNNER_DEBUG} )); then
+          build_args+=(--debug)
+        fi
 
         git fetch origin --no-tags --no-recurse-submodules -q
+
         .github/scripts/build-ubuntu ${build_args}
+
+
+    # ============================================================
+    # Windows
+    # ============================================================
 
     - name: Run Windows Build
       if: runner.os == 'Windows'
@@ -109,12 +143,20 @@ runs:
           Configuration = '${{ inputs.config }}'
         }
 
-        if ( $Env:RUNNER_DEBUG -ne $null ) {
-          $BuildArgs += @{ Debug = $true }
+        if ($Env:RUNNER_DEBUG -ne $null) {
+          $BuildArgs += @{
+            Debug = $true
+          }
         }
 
         git fetch origin --no-tags --no-recurse-submodules -q
+
         .github/scripts/Build-Windows.ps1 @BuildArgs
+
+
+    # ============================================================
+    # Build Summary
+    # ============================================================
 
     - name: Create Summary 📊
       if: runner.os == 'Linux'
@@ -124,18 +166,18 @@ runs:
 
         local -a ccache_data
 
-        if (( ${+RUNNER_DEBUG} )) {
+        if (( ${+RUNNER_DEBUG} )); then
           setopt XTRACE
           ccache_data=("${(fA)$(ccache -s -vv)}")
-        } else {
+        else
           ccache_data=("${(fA)$(ccache -s)}")
-        }
+        fi
 
-        print '### ${{ runner.os }} Ccache Stats (${{ inputs.target }})' >> $GITHUB_STEP_SUMMARY
-        print '```' >> $GITHUB_STEP_SUMMARY
+        print '### ${{ runner.os }} Ccache Stats (${{ inputs.target }})' >> "$GITHUB_STEP_SUMMARY"
+        print '```' >> "$GITHUB_STEP_SUMMARY"
 
-        for line (${ccache_data}) {
-          print ${line} >> $GITHUB_STEP_SUMMARY
-        }
+        for line (${ccache_data}); do
+          print ${line} >> "$GITHUB_STEP_SUMMARY"
+        done
 
-        print '```' >> $GITHUB_STEP_SUMMARY
+        print '```' >> "$GITHUB_STEP_SUMMARY"

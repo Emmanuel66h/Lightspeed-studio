@@ -58,6 +58,7 @@ if(NOT OAUTH_BASE_URL)
   set(OAUTH_BASE_URL "https://auth.obsproject.com/" CACHE STRING "Default OAuth base URL")
   mark_as_advanced(OAUTH_BASE_URL)
 endif()
+
 include(cmake/feature-twitch.cmake)
 include(cmake/feature-restream.cmake)
 include(cmake/feature-youtube.cmake)
@@ -68,7 +69,14 @@ configure_file(cmake/templates/ui-config.h.in ui-config.h)
 
 target_sources(
   obs-studio
-  PRIVATE obs-main.cpp OBSStudioAPI.cpp OBSStudioAPI.hpp OBSApp.cpp OBSApp.hpp OBSApp_Themes.cpp ui-config.h
+  PRIVATE
+    obs-main.cpp
+    OBSStudioAPI.cpp
+    OBSStudioAPI.hpp
+    OBSApp.cpp
+    OBSApp.hpp
+    OBSApp_Themes.cpp
+    ui-config.h
 )
 
 if(OS_WINDOWS)
@@ -83,6 +91,7 @@ endif()
 
 foreach(graphics_library IN ITEMS opengl metal d3d11)
   string(TOUPPER ${graphics_library} graphics_library_U)
+
   if(TARGET OBS::libobs-${graphics_library})
     target_compile_definitions(
       obs-studio
@@ -90,26 +99,59 @@ foreach(graphics_library IN ITEMS opengl metal d3d11)
         DL_${graphics_library_U}="$<$<IF:$<PLATFORM_ID:Windows>,TARGET_FILE_NAME,TARGET_SONAME_FILE_NAME>:OBS::libobs-${graphics_library}>"
     )
   else()
-    target_compile_definitions(obs-studio PRIVATE DL_${graphics_library_U}="")
+    target_compile_definitions(
+      obs-studio
+      PRIVATE
+        DL_${graphics_library_U}=""
+    )
   endif()
 endforeach()
 
 get_property(obs_module_list GLOBAL PROPERTY OBS_MODULES_ENABLED)
 list(JOIN obs_module_list "|" SAFE_MODULES)
-target_compile_definitions(obs-studio PRIVATE "SAFE_MODULES=\"${SAFE_MODULES}\"")
+
+target_compile_definitions(
+  obs-studio
+  PRIVATE
+    "SAFE_MODULES=\"${SAFE_MODULES}\""
+)
 
 get_target_property(target_sources obs-studio SOURCES)
+
 set(target_cpp_sources ${target_sources})
 set(target_hpp_sources ${target_sources})
 set(target_qt_sources ${target_sources})
+
 list(FILTER target_cpp_sources INCLUDE REGEX ".+\\.(cpp|mm|c|m)")
 list(SORT target_cpp_sources COMPARE NATURAL CASE SENSITIVE ORDER ASCENDING)
+
 list(FILTER target_hpp_sources INCLUDE REGEX ".+\\.(hpp|h)")
 list(SORT target_hpp_sources COMPARE NATURAL CASE SENSITIVE ORDER ASCENDING)
+
 list(FILTER target_qt_sources INCLUDE REGEX ".+\\.(ui|qrc)")
 list(SORT target_qt_sources COMPARE NATURAL CASE SENSITIVE ORDER ASCENDING)
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${target_cpp_sources})
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" FILES ${target_hpp_sources})
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Qt Files" FILES ${target_qt_sources})
 
-set_target_properties_obs(obs-studio PROPERTIES FOLDER frontend OUTPUT_NAME "$<IF:$<PLATFORM_ID:Windows>,obs64,obs>")
+source_group(
+  TREE "${CMAKE_CURRENT_SOURCE_DIR}"
+  PREFIX "Source Files"
+  FILES ${target_cpp_sources}
+)
+
+source_group(
+  TREE "${CMAKE_CURRENT_SOURCE_DIR}"
+  PREFIX "Header Files"
+  FILES ${target_hpp_sources}
+)
+
+source_group(
+  TREE "${CMAKE_CURRENT_SOURCE_DIR}"
+  PREFIX "Qt Files"
+  FILES ${target_qt_sources}
+)
+
+set_target_properties_obs(
+  obs-studio
+  PROPERTIES
+    FOLDER frontend
+    OUTPUT_NAME "$<IF:$<PLATFORM_ID:Windows>,LightspeedStudio,lightspeed>"
+)
