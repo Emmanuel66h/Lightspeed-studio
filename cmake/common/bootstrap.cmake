@@ -1,4 +1,4 @@
-# OBS CMake bootstrap module
+# Lightspeed Studio CMake bootstrap module
 
 include_guard(GLOBAL)
 
@@ -34,18 +34,18 @@ set(
 if("${CMAKE_CURRENT_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
   message(
     FATAL_ERROR
-    "In-source builds of OBS are not supported. "
+    "In-source builds of Lightspeed Studio are not supported. "
     "Specify a build directory via 'cmake -S <SOURCE DIRECTORY> -B <BUILD_DIRECTORY>' instead."
   )
   file(REMOVE_RECURSE "${CMAKE_CURRENT_SOURCE_DIR}/CMakeCache.txt" "${CMAKE_CURRENT_SOURCE_DIR}/CMakeFiles")
 endif()
 
 # Set default global project variables
-set(OBS_COMPANY_NAME "OBS Project")
-set(OBS_PRODUCT_NAME "OBS Studio")
-set(OBS_WEBSITE "https://www.obsproject.com")
+set(OBS_COMPANY_NAME "Lightspeed Labz")
+set(OBS_PRODUCT_NAME "Lightspeed Studio")
+set(OBS_WEBSITE "https://www.lightspeedlabz.online/")
 set(OBS_COMMENTS "Free and open source software for video recording and live streaming")
-set(OBS_LEGAL_COPYRIGHT "(C) Lain Bailey")
+set(OBS_LEGAL_COPYRIGHT "(C) Lightspeed Labz")
 set(OBS_CMAKE_VERSION 3.0.0)
 
 # Configure default version strings
@@ -54,7 +54,12 @@ set(_obs_release_candidate 0)
 set(_obs_beta 0)
 
 # Add common module directories to default search path
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/common" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/finders")
+list(
+  APPEND
+  CMAKE_MODULE_PATH
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/common"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/finders"
+)
 
 include(policies NO_POLICY_SCOPE)
 include(versionconfig)
@@ -68,9 +73,10 @@ if(NOT CMAKE_GENERATOR MATCHES "(Xcode|Visual Studio .+)")
       CMAKE_BUILD_TYPE
       "RelWithDebInfo"
       CACHE STRING
-      "OBS build type [Release, RelWithDebInfo, Debug, MinSizeRel]"
+      "Lightspeed Studio build type [Release, RelWithDebInfo, Debug, MinSizeRel]"
       FORCE
     )
+
     set_property(
       CACHE CMAKE_BUILD_TYPE
       PROPERTY STRINGS Release RelWithDebInfo Debug MinSizeRel
