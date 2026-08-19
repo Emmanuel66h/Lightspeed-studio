@@ -1,35 +1,44 @@
 name: Set Up and Build obs-studio
 description: Builds obs-studio for specified architecture and build config
+
 inputs:
   target:
     description: Build target for obs-studio
     required: true
+
   config:
     description: Build configuration
     required: false
     default: RelWithDebInfo
+
   codesign:
     description: Enable codesigning (macOS only)
     required: false
     default: 'false'
+
   codesignIdent:
     description: Developer ID for application codesigning (macOS only)
     required: false
     default: '-'
+
   codesignTeam:
     description: Team ID for application codesigning (macOS only)
     required: false
     default: ''
+
   provisioningProfileUUID:
     description: UUID of provisioning profile (macOS only)
     required: false
     default: ''
+
   workingDirectory:
     description: Working directory for packaging
     required: false
     default: ${{ github.workspace }}
+
 runs:
   using: composite
+
   steps:
     - name: Run macOS Build
       if: runner.os == 'macOS'
@@ -39,6 +48,7 @@ runs:
         CODESIGN_IDENT: ${{ inputs.codesignIdent }}
         CODESIGN_TEAM: ${{ inputs.codesignTeam }}
         PROVISIONING_PROFILE: ${{ inputs.provisioningProfileUUID }}
+        OBS_VERSION_OVERRIDE: 30.0.0-lightspeed
       run: |
         : Run macOS Build
 
@@ -46,6 +56,7 @@ runs:
           --config ${{ inputs.config }}
           --target macos-${{ inputs.target }}
         )
+
         if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
 
         if [[ '${{ inputs.codesign }}' == true ]] build_args+=(--codesign)
@@ -53,11 +64,11 @@ runs:
         git fetch origin --no-tags --no-recurse-submodules -q
         .github/scripts/build-macos ${build_args}
 
-    - name: Install Dependencies 🛍️
+    - name: Install Dependencies 🛠️
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        : Install Dependencies 🛍️
+        : Install Dependencies 🛠️
         echo ::group::Install Dependencies
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> $GITHUB_PATH
@@ -69,6 +80,8 @@ runs:
       if: runner.os == 'Linux'
       shell: zsh --no-rcs --errexit --pipefail {0}
       working-directory: ${{ inputs.workingDirectory }}
+      env:
+        OBS_VERSION_OVERRIDE: 30.0.0-lightspeed
       run: |
         : Run Ubuntu Build
 
@@ -76,6 +89,7 @@ runs:
           --config ${{ inputs.config }}
           --target ubuntu-${{ inputs.target }}
         )
+
         if (( ${+RUNNER_DEBUG} )) build_args+=(--debug)
 
         git fetch origin --no-tags --no-recurse-submodules -q
@@ -85,8 +99,11 @@ runs:
       if: runner.os == 'Windows'
       shell: pwsh
       working-directory: ${{ inputs.workingDirectory }}
+      env:
+        OBS_VERSION_OVERRIDE: 30.0.0-lightspeed
       run: |
         # Run Windows Build
+
         $BuildArgs = @{
           Target = '${{ inputs.target }}'
           Configuration = '${{ inputs.config }}'
@@ -106,6 +123,7 @@ runs:
         : Create Summary 📊
 
         local -a ccache_data
+
         if (( ${+RUNNER_DEBUG} )) {
           setopt XTRACE
           ccache_data=("${(fA)$(ccache -s -vv)}")
@@ -115,7 +133,9 @@ runs:
 
         print '### ${{ runner.os }} Ccache Stats (${{ inputs.target }})' >> $GITHUB_STEP_SUMMARY
         print '```' >> $GITHUB_STEP_SUMMARY
+
         for line (${ccache_data}) {
           print ${line} >> $GITHUB_STEP_SUMMARY
         }
+
         print '```' >> $GITHUB_STEP_SUMMARY
