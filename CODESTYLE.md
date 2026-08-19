@@ -423,3 +423,4 @@ Both file formats are predominantly used for build system configuration or conti
     * **Exception:** If the key of a variable is used for an underlying system e.g., to define environment variables in a shell environment that commonly uses `UPPER_SNAKE_CASE` names.
 * Use **double quotes** for **key names** and **string values** in JSON files.
 * Use **single quotes** for **complex strings in YAML files** that might otherwise not be correctly interpreted as strings, quoting is otherwise not necessary.
+
