@@ -2,6 +2,7 @@
 param(
     [ValidateSet('x64', 'arm64')]
     [string] $Target = 'x64',
+
     [ValidateSet('Debug', 'RelWithDebInfo', 'Release', 'MinSizeRel')]
     [string] $Configuration = 'RelWithDebInfo'
 )
@@ -39,7 +40,7 @@ function Build {
 
     $UtilityFunctions = Get-ChildItem -Path $PSScriptRoot/utils.pwsh/*.ps1 -Recurse
 
-    foreach($Utility in $UtilityFunctions) {
+    foreach ($Utility in $UtilityFunctions) {
         Write-Debug "Loading $($Utility.FullName)"
         . $Utility.FullName
     }
@@ -49,15 +50,32 @@ function Build {
     Push-Location -Stack BuildTemp
     Ensure-Location $ProjectRoot
 
-    $CmakeArgs = @('--preset', "windows-ci-${Target}")
+    # ============================================================
+    # Lightspeed Studio version
+    # ============================================================
+    #
+    # The Lightspeed Studio repository does not contain the original
+    # OBS release tags. Without an OBS tag, git describe can return
+    # the commit hash, which is not a valid OBS version.
+    #
+    # Explicitly provide a valid OBS version to CMake.
+    #
+    # ============================================================
+
+    $ObsVersion = '30.0.0-lightspeed'
+
+    $CmakeArgs = @(
+        '--preset', "windows-ci-${Target}"
+        "-DOBS_VERSION_OVERRIDE=$ObsVersion"
+    )
 
     $CmakeBuildArgs = @('--build')
     $CmakeInstallArgs = @()
 
     if ( $DebugPreference -eq 'Continue' ) {
-        $CmakeArgs += ('--debug-output')
-        $CmakeBuildArgs += ('--verbose')
-        $CmakeInstallArgs += ('--verbose')
+        $CmakeArgs += '--debug-output'
+        $CmakeBuildArgs += '--verbose'
+        $CmakeInstallArgs += '--verbose'
     }
 
     $CmakeBuildArgs += @(
@@ -73,16 +91,36 @@ function Build {
         '--config', $Configuration
     )
 
+    # ============================================================
+    # Configure
+    # ============================================================
+
     Log-Group "Configuring obs-studio..."
+
+    Write-Host "OBS Studio version: $ObsVersion"
+    Write-Host "Windows target: $Target"
+    Write-Host "Build configuration: $Configuration"
+
     Invoke-External cmake @CmakeArgs
 
+    # ============================================================
+    # Build
+    # ============================================================
+
     Log-Group "Building obs-studio..."
+
     Invoke-External cmake @CmakeBuildArgs
 
+    # ============================================================
+    # Install
+    # ============================================================
+
     Log-Group "Installing obs-studio..."
+
     Invoke-External cmake @CmakeInstallArgs
 
     Pop-Location -Stack BuildTemp
+
     Log-Group
 }
 
